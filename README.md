@@ -184,7 +184,7 @@ print ('find centre vo',rot_center_vo)
     find centre pc 955.5
     find centre vo 1025.75
 
-We tested three different centre-finding methods 'tomopy.find_center' ,'tomopy.find_center_pc' and 'tomopy.find_center_vo'. We found that the vo method is closest to the true rotation centre. So tomopy.find_center_vo will be used.
+I tested three different centre-finding methods 'tomopy.find_center' ,'tomopy.find_center_pc' and 'tomopy.find_center_vo'. I found that the vo method is closest to the true rotation centre. So tomopy.find_center_vo will be used.
 
 ```python
 proj_prep.shape
@@ -212,7 +212,8 @@ recon_slice = tomopy.recon(proj_log[:,sliceStart:sliceEnd,:],
 print (recon_slice.shape)
 ```
     (1, 2016, 2016)
-
+    
+#### Add a circular mask to show only the interested part of the CT image, you can comment this out if not needed.
 ```python
 recon_mask = tomopy.misc.corr.circ_mask(recon_slice, axis=0, ratio=0.7, val=0, ncore=None)
 
