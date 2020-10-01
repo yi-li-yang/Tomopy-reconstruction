@@ -19,10 +19,10 @@ Synchrotron CT data info:
 
 Construction options: all subfolders, single folder, single hdf, single volume, only multiposition, only backNforth
 
-## Import modules
+### Import modules
 ```python
 %matplotlib inline
-import tomopy 
+import tomopy
 from tomopy.recon.rotation import find_center
 from tomopy.recon.algorithm import recon
 import os, h5py, glob
@@ -35,9 +35,9 @@ import datetime
 print ('tomopy ver.',tomopy.__version__)
 ```
 
-## Scan Parameters -user input
+### Scan Parameters -user input
 ```python
-sample_dir = '\your data directory' 
+sample_dir = '\your data directory'
 
 #Enter Experiment index here
 Exp_idx=18
@@ -56,8 +56,7 @@ zinger_level = 500                 # Zinger level for projections
 zinger_level_w = 500              # Zinger level for white
 projNum=1501
 ```
-
-# Define an HDF file reader function
+### Define an HDF file reader function
 
 ```python
 def HDF_Reader(sample_dir,Exp_idx):
@@ -78,53 +77,42 @@ def HDF_Reader(sample_dir,Exp_idx):
     ff= h5py.File(ff_hdf,"r")
     ff= ff['entry/data/data']# could be proj['exchange/data]
     ff= np.array(ff)
-    
+
     print ('loading dark fields...')
     df_hdf=hdffiles[2]
     df= h5py.File(df_hdf,"r")
     df= df['entry/data/data']# could be proj['exchange/data]
     df= np.array(df)
-    
+
     print ('Data acquired\nproj\n',proj_hdf,'\nflatfield\n',ff_hdf,'\ndarkfield\n',df_hdf)
     print ('time=', time.time()-t0,'s')
     return exp_dir,proj,ff,df
 ```
-
 
 ```python
 exp_dir,proj,ff,df=HDF_Reader(sample_dir,Exp_idx)
 print (proj.shape)
 plt.imshow(proj[:, 0, :], cmap='Greys_r')
 ```
-
     Sample Directory: /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/
     loading projections...
     loading flat fields...
     loading dark fields...
     Data acquired
     proj
-     /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/Exp018_Indiana_01A_H2O_YPos14.8mm_WedNov8_17_02_26_2017_dimax_5x_80mm_5.0msecExpTime_10DegPerSec_Rolling_100umLuAG_1mmC2mmSi1mmGlass_2.657mrad_USArm1.15_monoY_-10.0_AHutch/proj_0016.hdf 
+     /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/Exp018_Indiana_01A_H2O_YPos14.8mm_WedNov8_17_02_26_2017_dimax_5x_80mm_5.0msecExpTime_10DegPerSec_Rolling_100umLuAG_1mmC2mmSi1mmGlass_2.657mrad_USArm1.15_monoY_-10.0_AHutch/proj_0016.hdf
     flatfield
-     /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/Exp018_Indiana_01A_H2O_YPos14.8mm_WedNov8_17_02_26_2017_dimax_5x_80mm_5.0msecExpTime_10DegPerSec_Rolling_100umLuAG_1mmC2mmSi1mmGlass_2.657mrad_USArm1.15_monoY_-10.0_AHutch/proj_0017.hdf 
+     /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/Exp018_Indiana_01A_H2O_YPos14.8mm_WedNov8_17_02_26_2017_dimax_5x_80mm_5.0msecExpTime_10DegPerSec_Rolling_100umLuAG_1mmC2mmSi1mmGlass_2.657mrad_USArm1.15_monoY_-10.0_AHutch/proj_0017.hdf
     darkfield
      /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/Exp018_Indiana_01A_H2O_YPos14.8mm_WedNov8_17_02_26_2017_dimax_5x_80mm_5.0msecExpTime_10DegPerSec_Rolling_100umLuAG_1mmC2mmSi1mmGlass_2.657mrad_USArm1.15_monoY_-10.0_AHutch/proj_0018.hdf
     time= 328.3007233142853 s
     (4503, 1008, 2016)
-    
-
-
-
 
     <matplotlib.image.AxesImage at 0x7f15b7a07518>
 
-
-
-
 ![png](output_6_2.png)
 
-
-# Pre-processing
-
+### Pre-processing
 
 ```python
 def prep(proj):
@@ -151,7 +139,6 @@ def prep(proj):
     return data
 ```
 
-
 ```python
 #pre-processing projections
 proj_prep=prep(proj)
@@ -159,7 +146,6 @@ proj_prep=prep(proj)
 plt.imshow(proj_prep[:, 0, :], cmap='Greys_r')
 imageio.imwrite(os.path.join(exp_dir,'data_sinogram.tif'),proj_prep[:, 0, :])
 ```
-
     Removing projection outlier...
     Removing flat field outlier...
     Normalising projection...
@@ -167,14 +153,10 @@ imageio.imwrite(os.path.join(exp_dir,'data_sinogram.tif'),proj_prep[:, 0, :])
     Retrieving phase...
     Done
     time= 39.08209908803304 min
-    
-
 
 ![png](output_9_1.png)
 
-
-# Auto-find rotation center
-
+### Auto-find rotation center
 
 ```python
 print ('Calculating theta')
@@ -202,53 +184,34 @@ print ('find centre vo',rot_center_vo)
     find centre pc 955.5
     find centre vo 1025.75
 
+We tested three different centre-finding methods 'tomopy.find_center' ,'tomopy.find_center_pc' and 'tomopy.find_center_vo'. We found that the vo method is closest to the true rotation centre. So tomopy.find_center_vo will be used.
 
 ```python
 proj_prep.shape
 ```
-
     (4503, 1008, 2016)
-    
-   
-# Slice Reconstruction
-
-
+### Slice Reconstruction
 ```python
 proj_log = tomopy.minus_log(proj)
 plt.imshow(proj_log[:,0,:], cmap='Greys_r')
 ```
-
-
-
-
     <matplotlib.image.AxesImage at 0x7fe2a523e908>
-
-
-
-
 ![png](output_16_1.png)
-
-
 
 ```python
 #Rec Slice
 sliceStart=504
 sliceEnd=sliceStart+1
 ```
-
-
 ```python
 recon_slice = tomopy.recon(proj_log[:,sliceStart:sliceEnd,:],
-                           theta=theta, 
+                           theta=theta,
                            center=rot_center_vo,
                            algorithm='gridrec',
                            filter_name='cosine')
 print (recon_slice.shape)
 ```
-
     (1, 2016, 2016)
-    
-
 
 ```python
 recon_mask = tomopy.misc.corr.circ_mask(recon_slice, axis=0, ratio=0.7, val=0, ncore=None)
@@ -257,19 +220,9 @@ plt.figure(figsize=(15,15))
 plt.imshow(recon_mask[0], cmap='Greys_r')
 #imageio.imwrite(os.path.join(exp_dir,'recon_mask.tif'),recon_mask[0])
 ```
-
-
-
-
     <matplotlib.image.AxesImage at 0x7fe2a50ffdd8>
 
-
-
-
 ![png](output_19_1.png)
-
-
-
 ```python
 recon_mask_ring=tomopy.misc.corr.remove_ring(recon_mask,int_mode='WRAP',rwidth=10,ncore=24)
 
@@ -277,27 +230,16 @@ recon_mask_ring=tomopy.misc.corr.remove_ring(recon_mask,int_mode='WRAP',rwidth=1
 #plt.imshow(recon_mask_ring[0], cmap='Greys_r')
 #imageio.imwrite(os.path.join(exp_dir,'recon_mask_ring.tif'),recon_mask_ring[0])
 ```
-
-
 ```python
 #Crop
 plt.figure(figsize=(15,15))
 plt.imshow(recon_mask_ring[0][270:1740,270:1740], cmap='Greys_r')
 ```
-
-
-
-
     <matplotlib.image.AxesImage at 0x7fe2a4fbd470>
-
-
-
-
 ![png](output_21_1.png)
 
 
-# Volume Reconstruction
-
+### Volume Reconstruction
 
 ```python
 print ('reconstructing volume...')
@@ -310,8 +252,6 @@ print ('time=', (time.time()-t0),'seconds')
     reconstructing volume...
     (1008, 2016, 2016)
     time= 31.385611295700073 seconds
-    
-
 
 ```python
 #mask
@@ -324,17 +264,15 @@ recon_vol_maskd=recon_vol_maskd[:,270:1740,270:1740]
 # print ('remove ring...')
 # recon_mask_ring=tomopy.misc.corr.remove_ring(recon_vol_maskd,int_mode='WRAP',rwidth=60,ncore=24)
 ```
-
     masking...
     cropping...
-    
 
-# Save
-
+### Save
 
 ```python
 save(recon_vol_maskd,exp_dir,name='Recon_lower_test_16:48_masked')
 ```
 
      1008 of 1008 images completed.
-   
+
+You can also parrallel this workflow using the parallel computing tool Joblib (https://pypi.org/project/joblib/#downloads) to reconstruct multiple scans simultaneously.
