@@ -265,8 +265,11 @@ plt.imshow(recon_mask[0], cmap='Greys_r')
     <matplotlib.image.AxesImage at 0x7fe2a50ffdd8>
 
 ![png](output_19_1.png)
+
+The reconstructed image is severely affected by ring artefacts. Therefore a ring artefact correction is added:
+
 ```python
-recon_mask_ring=tomopy.misc.corr.remove_ring(recon_mask,int_mode='WRAP',rwidth=10,ncore=24)
+recon_mask_ring=tomopy.misc.corr.remove_ring(recon_mask,int_mode='WRAP',rwidth=10,ncore=24) #you can test different parameters to find the optimal result
 
 #plt.figure(figsize=(15,15))
 #plt.imshow(recon_mask_ring[0], cmap='Greys_r')
@@ -278,6 +281,9 @@ plt.figure(figsize=(15,15))
 plt.imshow(recon_mask_ring[0][270:1740,270:1740], cmap='Greys_r')
 ```
     <matplotlib.image.AxesImage at 0x7fe2a4fbd470>
+   
+Reconstructed image after ring artefact correction
+    
 ![png](output_21_1.png)
 
 
