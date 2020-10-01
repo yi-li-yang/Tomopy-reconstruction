@@ -2,6 +2,8 @@
 MicroCT reconstruction using TomoPy
 ## Reconstructing APS-2BM synchrotron CT data using tomopy
 
+TomoPy API documentation:  https://readthedocs.org/projects/tomopy-test/downloads/pdf/latest/
+
 Synchrotron CT data info:
 
     Camera=dimax
@@ -109,10 +111,12 @@ plt.imshow(proj[:, 0, :], cmap='Greys_r')
     (4503, 1008, 2016)
 
     <matplotlib.image.AxesImage at 0x7f15b7a07518>
+Inspect the raw HDF file 
 
 ![png](output_6_2.png)
 
 ### Pre-processing
+There are four steps for pre-processing the raw HDF file before reconstruction to produce better reconstructed images. They are: Removing projection/flat-field outliers, normalising the projection using flat-field and dark-field scans, removing horizontal stripe artefacts and retrieving phase( Perform single-step phase retrieval from phase-contrast measurements). You can customise these steps for your own data.
 
 ```python
 def prep(proj):
@@ -153,6 +157,8 @@ imageio.imwrite(os.path.join(exp_dir,'data_sinogram.tif'),proj_prep[:, 0, :])
     Retrieving phase...
     Done
     time= 39.08209908803304 min
+
+HDF file after pre-processing
 
 ![png](output_9_1.png)
 
@@ -207,12 +213,47 @@ sliceEnd=sliceStart+1
 recon_slice = tomopy.recon(proj_log[:,sliceStart:sliceEnd,:],
                            theta=theta,
                            center=rot_center_vo,
-                           algorithm='gridrec',
-                           filter_name='cosine')
+                           algorithm='gridrec',   #you can choose an algorithm from the algorithm list 
+                           filter_name='cosine')  #you can choose a filter from the filter list
 print (recon_slice.shape)
 ```
     (1, 2016, 2016)
     
+ List of reconstruction methods:
+ 
+* ‘art’ Algebraic reconstruction technique.
+* ‘bart’ Block algebraic reconstruction technique.
+* ‘fbp’ Filtered back-projection algorithm.
+* ‘gridrec’ Fourier grid reconstruction algorithm.
+* ‘mlem’ Maximum-likelihood expectation maximization algorithm.
+* ‘osem’ Ordered-subset expectation maximization algorithm.
+* ‘ospml_hybrid’ Ordered-subset penalized maximum likelihood algorithm with weighted
+linear and quadratic penalties.
+* ‘ospml_quad’ Ordered-subset penalized maximum likelihood algorithm with quadratic
+penalties.
+* ‘pml_hybrid’ Penalized maximum likelihood algorithm with weighted linear and quadratic
+penalties.
+* ‘pml_quad’ Penalized maximum likelihood algorithm with quadratic penalty.
+* ‘sirt’ Simultaneous algebraic reconstruction technique.
+* ‘tv’ Total Variation reconstruction technique.
+* ‘grad’ Gradient descent method with a constant step size
+
+List of filters:
+* ‘none’ No filter.
+* ‘shepp’ Shepp-Logan filter (default).
+* ‘cosine’ Cosine filter.
+* ‘hann’ Cosine filter.
+* ‘hamming’ Hamming filter.
+* ‘ramlak’ Ram-Lak filter.
+* ‘parzen’ Parzen filter.
+* ‘butterworth’ Butterworth filter.
+* ‘custom’ A numpy array of size next_power_of_2(num_detector_columns)/2 specifying
+a custom filter in Fourier domain. The first element of the filter should be the zerofrequency component.
+* ‘custom2d’ A numpy array of size num_projections*next_power_of_2(num_detector_columns)/2
+specifying a custom angle-dependent filter in Fourier domain. The first element of each
+filter should be the zero-frequency component.
+
+
 #### Add a circular mask to show only the interested part of the CT image, you can comment this out if not needed.
 ```python
 recon_mask = tomopy.misc.corr.circ_mask(recon_slice, axis=0, ratio=0.7, val=0, ncore=None)
@@ -277,3 +318,4 @@ save(recon_vol_maskd,exp_dir,name='Recon_lower_test_16:48_masked')
      1008 of 1008 images completed.
 
 You can also parrallel this workflow using the parallel computing tool Joblib (https://pypi.org/project/joblib/#downloads) to reconstruct multiple scans simultaneously.
+ 
