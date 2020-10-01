@@ -118,8 +118,8 @@ Inspect the raw HDF file
 ### Pre-processing
 There are four steps for pre-processing the raw HDF file before reconstruction to produce better reconstructed images. They are: Removing projection/flat-field outliers, normalising the projection using flat-field and dark-field scans, removing horizontal stripe artefacts and retrieving phase( Perform single-step phase retrieval from phase-contrast measurements). You can customise these steps for your own data.
 
-```python
-def prep(proj):
+```python 
+def prep(proj): # a pre-processing workflow function
     t0=time.time()
     print ('Removing projection outlier...')
     proj_ro = tomopy.misc.corr.remove_outlier(proj, zinger_level, size=15, axis=0)
@@ -144,8 +144,8 @@ def prep(proj):
 ```
 
 ```python
-#pre-processing projections
-proj_prep=prep(proj)
+proj_prep=prep(proj) #pre-processing projections
+
 #Sinogram
 plt.imshow(proj_prep[:, 0, :], cmap='Greys_r')
 imageio.imwrite(os.path.join(exp_dir,'data_sinogram.tif'),proj_prep[:, 0, :])
@@ -162,6 +162,11 @@ HDF file after pre-processing
 
 ![png](output_9_1.png)
 
+For some scans there might be bad pixels with non-positive values, these pixels will damage the entire image when performing the minus-log function, therefore you need to replace these non-positive values by an infinitesimal number:
+
+```python
+    data[data <= 0] = 1e-9
+```
 ### Auto-find rotation center
 
 ```python
@@ -316,12 +321,20 @@ recon_vol_maskd=recon_vol_maskd[:,270:1740,270:1740]
     cropping...
 
 ### Save
-
 ```python
+def save(batch_name,directory,name):
+    savedir=os.path.join(directory,name)
+    if not os.path.exists(savedir):
+        os.makedirs(savedir)
+    for i,x in enumerate(range(0,len(batch_name[0::]))): 
+        imageio.imwrite(os.path.join(savedir,'recon_%04d.tif'%x),batch_name[x])
+        sys.stdout.write('\r %d of %d images completed.'% ( (i+1),len(batch_name) )) #print text progress
+        sys.stdout.flush()
+    return
+
 save(recon_vol_maskd,exp_dir,name='Recon_lower_test_16:48_masked')
 ```
 
      1008 of 1008 images completed.
 
 You can also parrallel this workflow using the parallel computing tool Joblib (https://pypi.org/project/joblib/#downloads) to reconstruct multiple scans simultaneously.
- 
