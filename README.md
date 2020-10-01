@@ -64,25 +64,21 @@ def HDF_Reader(sample_dir,Exp_idx):
     exp_dir = os.path.join(sample_dir,'Exp'+'{:03}'.format(Exp_idx)+'*') #experiment directory
     exp_dir = glob.glob(exp_dir)[0]
     hdffiles=sorted(glob.glob(os.path.join(sample_dir,exp_dir,'*.hdf'))) #list of hdfs
-
     print ('loading projections...')
     proj_hdf=hdffiles[0]
     proj= h5py.File(proj_hdf,"r")
     proj= proj['entry/data/data']# could be proj['exchange/data]
     proj= np.array(proj)
-
     print ('loading flat fields...')
     ff_hdf=hdffiles[1]
     ff= h5py.File(ff_hdf,"r")
     ff= ff['entry/data/data']# could be proj['exchange/data]
     ff= np.array(ff)
-
     print ('loading dark fields...')
     df_hdf=hdffiles[2]
     df= h5py.File(df_hdf,"r")
     df= df['entry/data/data']# could be proj['exchange/data]
     df= np.array(df)
-
     print ('Data acquired\nproj\n',proj_hdf,'\nflatfield\n',ff_hdf,'\ndarkfield\n',df_hdf)
     print ('time=', time.time()-t0,'s')
     return exp_dir,proj,ff,df
@@ -93,7 +89,6 @@ exp_dir,proj,ff,df=HDF_Reader(sample_dir,Exp_idx)
 print (proj.shape)
 plt.imshow(proj[:, 0, :], cmap='Greys_r')
 ```
-
     Sample Directory: /run/media/s1367222/SATUTRACK_II_DISK_1/ICCR_II_SATUTRACK_APS_NOV2017/CLEAN_SAMPLE/
     loading projections...
     loading flat fields...
@@ -121,8 +116,6 @@ plt.imshow(proj[:, 0, :], cmap='Greys_r')
 
 
 # Pre-processing
-
-
 ```python
 def prep(proj):
     t0=time.time()
