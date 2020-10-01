@@ -22,18 +22,18 @@ Construction options: all subfolders, single folder, single hdf, single volume, 
 
 # Import modules
 '''python
-%matplotlib inline
-import tomopy
-from tomopy.recon.rotation import find_center
-from tomopy.recon.algorithm import recon
-import os, h5py, glob
-import numpy as np
-import matplotlib.pyplot as plt
-import time
-import sys
-import imageio
-import datetime
-print ('tomopy ver.',tomopy.__version__)
+    %matplotlib inline
+    import tomopy
+    from tomopy.recon.rotation import find_center
+    from tomopy.recon.algorithm import recon
+    import os, h5py, glob
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import time
+    import sys
+    import imageio
+    import datetime
+    print ('tomopy ver.',tomopy.__version__)
 '''
 
 # Recon Parameters -user input
